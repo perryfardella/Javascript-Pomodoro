@@ -4,25 +4,31 @@
     Author: Perry Fardella
 */
 
-// Initialise a readline interface
-const readline = require('readline').createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+const readline = require('readline');
 
-//Initialise a variable to store the pomodoro time
-var time;
+//Function that allows user input and will wait for the input from the user
+function askQuestion(query) {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
 
-function getTimeFromUser() {
-    readline.question('How long would you like to set the pomodoro for? (in minutes)\n', inputTime => {
-        if (isNaN(inputTime)) {
-            console.log("You did not enter a number, try again.");
-            getTimeFromUser();
-        } else {
-            time = inputTime;
-        }
-        readline.close();
-      });
+    return new Promise(resolve => rl.question(query, ans => {
+        rl.close();
+        resolve(ans);
+    }))
 }
 
-getTimeFromUser();
+async function getInput() {
+    do {
+        time = await askQuestion("How many minutes would you like the pomodoro to be on for?\n");
+        if(isNaN(time)) {
+            console.log("You did not enter a number, try again.\n");
+        } else {
+            console.log("The pomodoro will be on for " + time + " minutes.");
+        }
+    } while (isNaN(time))
+}
+
+getInput();
+
